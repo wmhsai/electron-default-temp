@@ -1,9 +1,25 @@
-import { app, BrowserWindow, dialog } from "electron";
+import {
+  app, BrowserWindow
+  // , dialog
+  ,
+
+  globalShortcut, Menu,
+  powerMonitor,
+  Tray,
+} from "electron";
 import * as path from "path";
+
+let appTray;
+let mainWindow: BrowserWindow;
+const trayMenu = Menu.buildFromTemplate([
+  { label: "item1" },
+  { label: "item2" }
+]);
+
 
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     height: 600,
     webPreferences: {
       nodeIntegration: true,
@@ -12,37 +28,37 @@ function createWindow() {
     width: 800,
     title: 'First Test App',
     backgroundColor: "#fcba03",
-    opacity: 0.5,
-    alwaysOnTop: true,
+    // opacity: 0.5,
+    // alwaysOnTop: true,
     // show: false,
     // resizable:false, //drag and drop resizable
     // movable:false,
-    fullscreen: true, //we can set fullscreeen for app ^_____^
+    // fullscreen: true, //we can set fullscreeen for app ^_____^
     frame: false,//frameless =>create a windows without tab remove frame =>splash screen ^_____^
     // transparent: true,
   });
+  CreateAppTray()
 
-
-  mainWindow.loadFile(path.join(__dirname, "../index.html"));
-  const childWindow = new BrowserWindow({
-    show: false,
-    frame: false,
-    transparent: true,
-    backgroundColor: 'rgba(255, 255, 255, 0)',
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-    },
-  });
-  childWindow.setBounds(mainWindow.getBounds());
+  // mainWindow.loadFile(path.join(__dirname, "../index.html"));
+  // const childWindow = new BrowserWindow({
+  //   show: false,
+  //   frame: false,
+  //   transparent: true,
+  //   backgroundColor: 'rgba(255, 255, 255, 0)',
+  //   webPreferences: {
+  //     nodeIntegration: false,
+  //     contextIsolation: true,
+  //   },
+  // });
+  // childWindow.setBounds(mainWindow.getBounds());
   // Show the locked overlay
-  childWindow.show();
+  // childWindow.show();
 
   // Load a blank page in the child window
-  childWindow.loadURL('about:blank');
+  // childWindow.loadURL('about:blank');
 
   // Open the DevTools for debugging
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
   // const child = new BrowserWindow({
   //   width: 150,
   //   height: 150,
@@ -50,10 +66,6 @@ function createWindow() {
   //   modal: true,
   //   show: false,
   // });
-
-
-
-
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "../index.html"));
@@ -69,17 +81,55 @@ function createWindow() {
   //   mainWindow.show()
   //   child.show()
   // })
+  globalShortcut.register('CommandOrControl+F', () => {
+    console.log('user press F');
+    globalShortcut.unregister('CommandOrControl+F')
+  })
+  // globalShortcut.register('CommandOrControl+F', () => {
+  //   console.log('user press F');
 
-  mainWindow.webContents.on("did-finish-load", () => {
-    dialog.showOpenDialog(mainWindow,{
-      buttonLabel:"select item",
-      defaultPath:app.getPath('desktop')
-    })
-    });
-    
+  // })
+  // mainWindow.webContents.on("did-finish-load", () => {
+  // dialog.showOpenDialog(mainWindow,{
+  //   title:"select new item",
+  //   buttonLabel:"select item",
+  //   defaultPath:app.getPath('desktop'),
+  //   properties:["createDirectory","promptToCreate"]
+  // }).then((res)=>{
+  //   console.log(res.filePaths ,"res") ;
+  // })
+  //     dialog.showMessageBox({
+  //       title:"title of message box",
+  //       message:"this is message of messageBox",
+  //       detail:"this is detail of messageBox",
+  //       buttons:['yes','no','cancel']
+  //     }).then((res)=>{
+  //       console.log(res.response ,"res");
+
+  //     })
+  //     });
+
 
 }
+function CreateAppTray() {
+  const imagePath: string = path.join('assets', 'tray-icon.png')
+  appTray = new Tray(imagePath)
+  appTray.setToolTip('my application')
+  appTray.setContextMenu(trayMenu)
+  appTray.on('click', function (e) {
+    if (e.shiftKey) {
+      app.quit()
+    }
+    else {
+      mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show()
 
+    }
+  })
+}
+powerMonitor.on('suspend', function (e: any) {
+  console.log(e, 'This is a Suspend event');
+
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
