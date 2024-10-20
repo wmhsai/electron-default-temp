@@ -34,7 +34,7 @@ function createWindow() {
     // resizable:false, //drag and drop resizable
     // movable:false,
     // fullscreen: true, //we can set fullscreeen for app ^_____^
-    frame: false,//frameless =>create a windows without tab remove frame =>splash screen ^_____^
+    // frame: false,//frameless =>create a windows without tab remove frame =>splash screen ^_____^
     // transparent: true,
   });
   CreateAppTray()
@@ -58,7 +58,7 @@ function createWindow() {
   // childWindow.loadURL('about:blank');
 
   // Open the DevTools for debugging
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
   // const child = new BrowserWindow({
   //   width: 150,
   //   height: 150,
