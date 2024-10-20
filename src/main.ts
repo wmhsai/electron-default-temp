@@ -1,9 +1,9 @@
 import {
-  app, BrowserWindow
-  // , dialog
-  ,
-
-  globalShortcut, Menu,
+  app,
+   BrowserWindow,
+  // dialog,
+  globalShortcut,
+  Menu,
   powerMonitor,
   Tray,
 } from "electron";
@@ -129,6 +129,11 @@ function CreateAppTray() {
 powerMonitor.on('suspend', function (e: any) {
   console.log(e, 'This is a Suspend event');
 
+  powerMonitor.on('resume', function () {
+    if (mainWindow == null) {
+      createWindow()
+    }
+  })
 })
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
